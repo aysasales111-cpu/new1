@@ -360,3 +360,583 @@ function switchTab(el, tabId) {
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Bazar — Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: linear-gradient(160deg, #f0faf4 0%, #fdf6ee 100%);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(15,26,20,0.12);
+    overflow: hidden;
+    max-width: 520px;
+    width: 100%;
+  }
+
+  .header {
+    background: #1a7a4a;
+    padding: 2rem;
+    text-align: center;
+  }
+  .header h1 {
+    color: white; font-size: 1.8rem; font-weight: 800;
+  }
+  .header h1 span { color: #f9a825; }
+  .header p {
+    font-family: 'Tiro Bangla', serif;
+    color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 0.4rem;
+  }
+
+  .form-body { padding: 2rem; }
+
+  .form-group { margin-bottom: 1.2rem; }
+
+  label {
+    display: block;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #2c4035;
+    margin-bottom: 0.4rem; font-weight: 600;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #c5dccb;
+    border-radius: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.95rem; color: #1c2e24;
+    outline: none; transition: border 0.2s;
+    background: white;
+    -webkit-appearance: none;
+  }
+  input::placeholder { color: #aaa; }
+  input:focus, select:focus { border-color: #1a7a4a; }
+
+  .payment-box {
+    background: #e8f7ef;
+    border: 1.5px solid #1a7a4a;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+  .payment-box p {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #2c4035; margin-bottom: 0.4rem;
+  }
+  .payment-box .upi {
+    font-size: 1.1rem; font-weight: 700; color: #1a7a4a;
+    background: white; padding: 0.5rem 1rem;
+    border-radius: 8px; display: inline-block;
+    margin-top: 0.4rem; letter-spacing: 0.5px;
+  }
+  .payment-box .note {
+    font-size: 0.8rem; color: #5a7a66; margin-top: 0.5rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #1a7a4a; color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(26,122,74,0.3);
+  }
+  .submit-btn:hover { background: #2aad68; transform: translateY(-2px); }
+
+  .success {
+    display: none;
+    text-align: center; padding: 2rem;
+  }
+  .success.show { display: block; }
+  .success .icon { font-size: 3rem; margin-bottom: 1rem; }
+  .success h2 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1.3rem; color: #1a7a4a; margin-bottom: 0.5rem;
+  }
+  .success p {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #5a7a66; line-height: 1.7;
+  }
+
+  .error {
+    background: #fdf0f0; border: 1px solid #dc3545;
+    border-radius: 8px; padding: 0.7rem 1rem;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.85rem; color: #dc3545;
+    margin-bottom: 1rem; display: none;
+  }
+  .error.show { display: block; }
+
+  .back-link {
+    display: block; text-align: center;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.85rem; color: #5a7a66;
+    margin-top: 1rem; text-decoration: none;
+  }
+  .back-link:hover { color: #1a7a4a; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Test <span>Bazar</span></h1>
+    <p>Registration করুন এবং test শুরু করুন</p>
+  </div>
+
+  <div class="form-body">
+
+    <!-- SUCCESS MESSAGE -->
+    <div class="success" id="successMsg">
+      <div class="icon">🎉</div>
+      <h2>Registration সফল হয়েছে!</h2>
+      <p>আপনার তথ্য পাওয়া গেছে। Payment verify হলে <strong>email এ test এর link</strong> পাঠানো হবে।<br><br>সাধারণত ১-২ ঘণ্টার মধ্যে confirm হয়।</p>
+    </div>
+
+    <!-- FORM -->
+    <div id="regForm">
+
+      <!-- ERROR -->
+      <div class="error" id="errorMsg">সব তথ্য সঠিকভাবে পূরণ করুন।</div>
+
+      <!-- NAME -->
+      <div class="form-group">
+        <label>পূর্ণ নাম *</label>
+        <input type="text" id="name" placeholder="আপনার নাম লিখুন">
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="email" placeholder="example@gmail.com">
+      </div>
+
+      <!-- MOBILE -->
+      <div class="form-group">
+        <label>Mobile নম্বর *</label>
+        <input type="tel" id="mobile" placeholder="আপনার mobile নম্বর">
+      </div>
+
+      <!-- CLASS -->
+      <div class="form-group">
+        <label>Class *</label>
+        <select id="class">
+          <option value="">বেছে নিন</option>
+          <option>একাদশ শ্রেণি (Class 11)</option>
+          <option>দ্বাদশ শ্রেণি (Class 12)</option>
+        </select>
+      </div>
+
+      <!-- SUBJECT GROUP -->
+      <div class="form-group">
+        <label>বিভাগ *</label>
+        <select id="group">
+          <option value="">বেছে নিন</option>
+          <option>বিজ্ঞান</option>
+          <option>মানবিক</option>
+          <option>বাণিজ্য</option>
+        </select>
+      </div>
+
+      <!-- PLAN -->
+      <div class="form-group">
+        <label>Plan *</label>
+        <select id="plan" onchange="updatePayment()">
+          <option value="">বেছে নিন</option>
+          <option value="monthly">মাসিক — ₹৯৯</option>
+          <option value="yearly">বার্ষিক — ₹৮৯৯</option>
+        </select>
+      </div>
+
+      <!-- PAYMENT BOX -->
+      <div class="payment-box">
+        <p>এই UPI তে payment করুন:</p>
+        <div class="upi">ajsuajsu71@oksbi</div>
+        <p class="note" id="payNote">Plan বেছে নিলে amount দেখাবে</p>
+      </div>
+
+      <!-- TRANSACTION ID -->
+      <div class="form-group">
+        <label>Transaction ID *</label>
+        <input type="text" id="txnId" placeholder="Payment এর পর Transaction ID দিন">
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">Registration করুন →</button>
+      <a href="index.html" class="back-link">← Landing Page এ ফিরে যান</a>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// আপনার Google Form এর submit URL এখানে বসান
+// নিচে বলা আছে কীভাবে পাবেন
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+
+// Google Form এর field entry ID গুলো
+const ENTRIES = {
+  name: "entry.XXXXXXXXX",
+  email: "entry.XXXXXXXXX",
+  mobile: "entry.XXXXXXXXX",
+  class: "entry.XXXXXXXXX",
+  group: "entry.XXXXXXXXX",
+  plan: "entry.XXXXXXXXX",
+  txnId: "entry.XXXXXXXXX"
+};
+
+function updatePayment() {
+  const plan = document.getElementById('plan').value;
+  const note = document.getElementById('payNote');
+  if (plan === 'monthly') note.textContent = 'পাঠান: ₹৯৯';
+  else if (plan === 'yearly') note.textContent = 'পাঠান: ₹৮৯৯';
+  else note.textContent = 'Plan বেছে নিলে amount দেখাবে';
+}
+
+function submitForm() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const mobile = document.getElementById('mobile').value.trim();
+  const cls = document.getElementById('class').value;
+  const grp = document.getElementById('group').value;
+  const plan = document.getElementById('plan').value;
+  const txnId = document.getElementById('txnId').value.trim();
+
+  const error = document.getElementById('errorMsg');
+
+  if (!name || !email || !mobile || !cls || !grp || !plan || !txnId) {
+    error.classList.add('show');
+    return;
+  }
+
+  error.classList.remove('show');
+
+  // Google Form এ data পাঠানো
+  const data = new FormData();
+  data.append(ENTRIES.name, name);
+  data.append(ENTRIES.email, email);
+  data.append(ENTRIES.mobile, mobile);
+  data.append(ENTRIES.class, cls);
+  data.append(ENTRIES.group, grp);
+  data.append(ENTRIES.plan, plan);
+  data.append(ENTRIES.txnId, txnId);
+
+  fetch(GOOGLE_FORM_URL, { method: 'POST', body: data, mode: 'no-cors' })
+    .then(() => {
+      document.getElementById('regForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    })
+    .catch(() => {
+      document.getElementById('regForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    });
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Bazar — Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: linear-gradient(160deg, #f0faf4 0%, #fdf6ee 100%);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(15,26,20,0.12);
+    overflow: hidden;
+    max-width: 520px;
+    width: 100%;
+  }
+
+  .header {
+    background: #1a7a4a;
+    padding: 2rem;
+    text-align: center;
+  }
+  .header h1 {
+    color: white; font-size: 1.8rem; font-weight: 800;
+  }
+  .header h1 span { color: #f9a825; }
+  .header p {
+    font-family: 'Tiro Bangla', serif;
+    color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 0.4rem;
+  }
+
+  .form-body { padding: 2rem; }
+
+  .form-group { margin-bottom: 1.2rem; }
+
+  label {
+    display: block;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #2c4035;
+    margin-bottom: 0.4rem; font-weight: 600;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #c5dccb;
+    border-radius: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.95rem; color: #1c2e24;
+    outline: none; transition: border 0.2s;
+    background: white;
+    -webkit-appearance: none;
+  }
+  input::placeholder { color: #aaa; }
+  input:focus, select:focus { border-color: #1a7a4a; }
+
+  .payment-box {
+    background: #e8f7ef;
+    border: 1.5px solid #1a7a4a;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+  .payment-box p {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #2c4035; margin-bottom: 0.4rem;
+  }
+  .payment-box .upi {
+    font-size: 1.1rem; font-weight: 700; color: #1a7a4a;
+    background: white; padding: 0.5rem 1rem;
+    border-radius: 8px; display: inline-block;
+    margin-top: 0.4rem; letter-spacing: 0.5px;
+  }
+  .payment-box .note {
+    font-size: 0.8rem; color: #5a7a66; margin-top: 0.5rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #1a7a4a; color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(26,122,74,0.3);
+  }
+  .submit-btn:hover { background: #2aad68; transform: translateY(-2px); }
+
+  .success {
+    display: none;
+    text-align: center; padding: 2rem;
+  }
+  .success.show { display: block; }
+  .success .icon { font-size: 3rem; margin-bottom: 1rem; }
+  .success h2 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 1.3rem; color: #1a7a4a; margin-bottom: 0.5rem;
+  }
+  .success p {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.9rem; color: #5a7a66; line-height: 1.7;
+  }
+
+  .error {
+    background: #fdf0f0; border: 1px solid #dc3545;
+    border-radius: 8px; padding: 0.7rem 1rem;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.85rem; color: #dc3545;
+    margin-bottom: 1rem; display: none;
+  }
+  .error.show { display: block; }
+
+  .back-link {
+    display: block; text-align: center;
+    font-family: 'Tiro Bangla', serif;
+    font-size: 0.85rem; color: #5a7a66;
+    margin-top: 1rem; text-decoration: none;
+  }
+  .back-link:hover { color: #1a7a4a; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Test <span>Bazar</span></h1>
+    <p>Registration করুন এবং test শুরু করুন</p>
+  </div>
+
+  <div class="form-body">
+
+    <!-- SUCCESS MESSAGE -->
+    <div class="success" id="successMsg">
+      <div class="icon">🎉</div>
+      <h2>Registration সফল হয়েছে!</h2>
+      <p>আপনার তথ্য পাওয়া গেছে। Payment verify হলে <strong>email এ test এর link</strong> পাঠানো হবে।<br><br>সাধারণত ১-২ ঘণ্টার মধ্যে confirm হয়।</p>
+    </div>
+
+    <!-- FORM -->
+    <div id="regForm">
+
+      <!-- ERROR -->
+      <div class="error" id="errorMsg">সব তথ্য সঠিকভাবে পূরণ করুন।</div>
+
+      <!-- NAME -->
+      <div class="form-group">
+        <label>পূর্ণ নাম *</label>
+        <input type="text" id="name" placeholder="আপনার নাম লিখুন">
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="email" placeholder="example@gmail.com">
+      </div>
+
+      <!-- MOBILE -->
+      <div class="form-group">
+        <label>Mobile নম্বর *</label>
+        <input type="tel" id="mobile" placeholder="আপনার mobile নম্বর">
+      </div>
+
+      <!-- CLASS -->
+      <div class="form-group">
+        <label>Class *</label>
+        <select id="class">
+          <option value="">বেছে নিন</option>
+          <option>একাদশ শ্রেণি (Class 11)</option>
+          <option>দ্বাদশ শ্রেণি (Class 12)</option>
+        </select>
+      </div>
+
+      <!-- SUBJECT GROUP -->
+      <div class="form-group">
+        <label>বিভাগ *</label>
+        <select id="group">
+          <option value="">বেছে নিন</option>
+          <option>বিজ্ঞান</option>
+          <option>মানবিক</option>
+          <option>বাণিজ্য</option>
+        </select>
+      </div>
+
+      <!-- PLAN -->
+      <div class="form-group">
+        <label>Plan *</label>
+        <select id="plan" onchange="updatePayment()">
+          <option value="">বেছে নিন</option>
+          <option value="monthly">মাসিক — ₹৯৯</option>
+          <option value="yearly">বার্ষিক — ₹৮৯৯</option>
+        </select>
+      </div>
+
+      <!-- PAYMENT BOX -->
+      <div class="payment-box">
+        <p>এই UPI তে payment করুন:</p>
+        <div class="upi">ajsuajsu71@oksbi</div>
+        <p class="note" id="payNote">Plan বেছে নিলে amount দেখাবে</p>
+      </div>
+
+      <!-- TRANSACTION ID -->
+      <div class="form-group">
+        <label>Transaction ID *</label>
+        <input type="text" id="txnId" placeholder="Payment এর পর Transaction ID দিন">
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">Registration করুন →</button>
+      <a href="index.html" class="back-link">← Landing Page এ ফিরে যান</a>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// আপনার Google Form এর submit URL এখানে বসান
+// নিচে বলা আছে কীভাবে পাবেন
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+
+// Google Form এর field entry ID গুলো
+const ENTRIES = {
+  name: "entry.XXXXXXXXX",
+  email: "entry.XXXXXXXXX",
+  mobile: "entry.XXXXXXXXX",
+  class: "entry.XXXXXXXXX",
+  group: "entry.XXXXXXXXX",
+  plan: "entry.XXXXXXXXX",
+  txnId: "entry.XXXXXXXXX"
+};
+
+function updatePayment() {
+  const plan = document.getElementById('plan').value;
+  const note = document.getElementById('payNote');
+  if (plan === 'monthly') note.textContent = 'পাঠান: ₹৯৯';
+  else if (plan === 'yearly') note.textContent = 'পাঠান: ₹৮৯৯';
+  else note.textContent = 'Plan বেছে নিলে amount দেখাবে';
+}
+
+function submitForm() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const mobile = document.getElementById('mobile').value.trim();
+  const cls = document.getElementById('class').value;
+  const grp = document.getElementById('group').value;
+  const plan = document.getElementById('plan').value;
+  const txnId = document.getElementById('txnId').value.trim();
+
+  const error = document.getElementById('errorMsg');
+
+  if (!name || !email || !mobile || !cls || !grp || !plan || !txnId) {
+    error.classList.add('show');
+    return;
+  }
+
+  error.classList.remove('show');
+
+  // Google Form এ data পাঠানো
+  const data = new FormData();
+  data.append(ENTRIES.name, name);
+  data.append(ENTRIES.email, email);
+  data.append(ENTRIES.mobile, mobile);
+  data.append(ENTRIES.class, cls);
+  data.append(ENTRIES.group, grp);
+  data.append(ENTRIES.plan, plan);
+  data.append(ENTRIES.txnId, txnId);
+
+  fetch(GOOGLE_FORM_URL, { method: 'POST', body: data, mode: 'no-cors' })
+    .then(() => {
+      document.getElementById('regForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    })
+    .catch(() => {
+      document.getElementById('regForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    });
+}
+</script>
+
+</body>
+</html>
